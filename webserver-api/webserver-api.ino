@@ -2,6 +2,7 @@
 #include <WiFiClient.h>
 #include <WebServer.h>
 #include <uri/UriBraces.h>
+#include "DHTesp.h"
 
 #define WIFI_SSID "Wokwi-GUEST"
 #define WIFI_PASSWORD ""
@@ -11,6 +12,9 @@ WebServer server(80);
 
 const int LED1 = 26;
 const int LED2 = 27;
+const int TEMP = 18;
+
+DHTesp dhtSensor;
 
 bool led1State = false;
 bool led2State = false;
@@ -19,10 +23,22 @@ String boolToJson(bool value) {
   return value ? "true" : "false";
 }
 
+//led
 void sendJsonStatus() {
   String response = "{";
   response += "\"led1\":" + boolToJson(led1State) + ",";
   response += "\"led2\":" + boolToJson(led2State);
+  response += "}";
+
+  server.send(200, "application/json", response);
+}
+
+//temp
+void sendJsonTemphum() {
+  TempAndHumidity data = dhtSensor.getTempAndHumidity();
+  String response = "{";
+  response += "\"temperatura\":" + String(data.temperature, 2) + "°C" + ",";
+  response += "\"umidade\":" + String(data.humidity, 1) + "%";
   response += "}";
 
   server.send(200, "application/json", response);
@@ -55,6 +71,7 @@ void setup(void) {
 
   digitalWrite(LED1, LOW);
   digitalWrite(LED2, LOW);
+  dhtSensor.setup(TEMP, DHTesp::DHT22);
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD, WIFI_CHANNEL);
   Serial.print("Connecting to WiFi ");
@@ -71,6 +88,10 @@ void setup(void) {
 
   server.on("/api/status", HTTP_GET, []() {
     sendJsonStatus();
+  });
+
+  server.on("/api/temphum", HTTP_GET, []() {
+    sendJsonTemphum();
   });
 
   server.on(UriBraces("/api/led/{}/{}"), HTTP_POST, []() {
