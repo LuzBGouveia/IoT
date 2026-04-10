@@ -1,4 +1,3 @@
-
 #include <WiFi.h>
 #include <WiFiClient.h>
 #include <WebServer.h>
@@ -36,12 +35,12 @@ void sendHtml() {
       </head>
             
       <body>
-        <h1>ESP32 Web Server</h1>
+        <h1>Meu ESP32 Web Server legalzinho :D</h1>
 
         <div>
-          <h2>LED 1</h2>
+          <h2>Carinha 1</h2>
           <a href="/toggle/1" class="btn LED1_TEXT">LED1_TEXT</a>
-          <h2>LED 2</h2>
+          <h2>Carinha 2 2</h2>
           <a href="/toggle/2" class="btn LED2_TEXT">LED2_TEXT</a>
         </div>
       </body>
